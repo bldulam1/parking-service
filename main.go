@@ -13,7 +13,6 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
 	_ "github.com/lib/pq"
-	"github.com/russross/blackfriday"
 )
 
 func repeatHandler(r int) gin.HandlerFunc {
