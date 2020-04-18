@@ -25,5 +25,9 @@ func main() {
 		c.HTML(http.StatusOK, "index.tmpl.html", nil)
 	})
 
+	router.GET("/mark", func(c *gin.Context) {
+		c.String(http.StatusOK, "Hello")
+	})
+
 	router.Run(":" + port)
 }

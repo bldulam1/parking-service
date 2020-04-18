@@ -1,4 +1,4 @@
-module github.com/heroku/go-getting-started
+module github.com/bldulam1/parking-service
 
 go 1.12
 
