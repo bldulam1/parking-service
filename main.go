@@ -91,6 +91,8 @@ func main() {
 		c.String(http.StatusOK, "hello world")
 	})
 
+	fail
+
 	router.GET("/repeat", repeatHandler(repeat))
 
 	router.GET("/db", dbFunc(db))
