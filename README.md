@@ -5,6 +5,8 @@ A barebones Go app, which can easily be deployed to Heroku.
 
 This application supports the [Getting Started with Go on Heroku](https://devcenter.heroku.com/articles/getting-started-with-go) article - check it out.
 
+![Go](https://github.com/bldulam1/parking-service/workflows/Go/badge.svg)
+
 ## Running Locally
 
 Make sure you have [Go](http://golang.org/doc/install) version 1.12 or newer and the [Heroku Toolbelt](https://toolbelt.heroku.com/) installed.
