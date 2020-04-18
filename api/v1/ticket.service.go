@@ -9,14 +9,23 @@ import (
 
 func CreateTicket(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ticket := NewTicket(c.Query("vehicle"), c.Query("parkingSlot"))
+		vehicle, parkingSlot := c.Query("vehicle"), c.Query("parkingSlot")
+		if len(parkingSlot) == 0 {
+			c.String(http.StatusBadRequest, "Missing Parking Slot")
+			return
+		} else if len(vehicle) == 0 {
+			c.String(http.StatusBadRequest, "Missing Vehicle Information")
+			return
+		}
+
+		ticket := NewTicket(vehicle, parkingSlot)
 		c.JSON(http.StatusOK, string(ticket.JSON()))
 
 		if _, err := db.Exec(`
 			CREATE TABLE IF NOT EXISTS tickets (
 				id uuid DEFAULT uuid_generate_v4(), 
-				timeEntry timestamp, 
-				timeExit timestamp, 
+				time_entry timestamp, 
+				time_exit timestamp, 
 				vehicle varchar, 
 				parkingSlot varchar
 			)
@@ -27,10 +36,12 @@ func CreateTicket(db *sql.DB) gin.HandlerFunc {
 		}
 
 		if _, err := db.Exec(fmt.Sprintf(`
-			INSERT INTO tickets (timeEntry, vehicle, parkingSlot) 
-				VALUES (now(),%s,%s)`, ticket.Vehicle, ticket.ParkingSlot)); err != nil {
-			c.String(http.StatusInternalServerError,
-				fmt.Sprintf("Error incrementing tick: %q", err))
+			INSERT INTO tickets (time_entry, vehicle, parkingSlot) VALUES (
+				now(),
+				%s,
+				%s
+			)`, ticket.Vehicle, ticket.ParkingSlot)); err != nil {
+			c.String(http.StatusInternalServerError, fmt.Sprintf("Error incrementing tick: %q", err))
 			return
 		}
 		//
