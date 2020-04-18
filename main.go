@@ -88,10 +88,8 @@ func main() {
 	})
 
 	router.GET("/mark", func(c *gin.Context) {
-		c.String(http.StatusOK, "hello world")
+		c.String(http.StatusOK, "hello world2")
 	})
-
-	fail
 
 	router.GET("/repeat", repeatHandler(repeat))
 
