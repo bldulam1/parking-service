@@ -57,7 +57,8 @@ func main() {
 
 	router.GET("/repeat", repeatHandler(repeat))
 
-	router.GET("/api/v1/ticket", v1.DbFunc(db))
+	router.POST("/api/v1/ticket", v1.CreateTicket(db))
+	router.GET("/api/v1/ticket", v1.CreateTicket(db))
 
 	router.Run(":" + port)
 }

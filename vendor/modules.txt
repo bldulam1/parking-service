@@ -2,6 +2,8 @@
 github.com/gin-gonic/gin
 github.com/gin-gonic/gin/binding
 github.com/gin-gonic/gin/render
+# github.com/google/uuid v1.1.1
+github.com/google/uuid
 # github.com/heroku/x v0.0.0-20171004170240-705849e307dd
 github.com/heroku/x/hmetrics
 github.com/heroku/x/hmetrics/onload
@@ -15,8 +17,6 @@ github.com/manucorporat/sse
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.0-20150814002629-7fcbc72f853b
 github.com/mattn/go-isatty
-# github.com/russross/blackfriday v1.5.2
-github.com/russross/blackfriday
 # golang.org/x/net v0.0.0-20150629084131-d9558e5c97f8
 golang.org/x/net/context
 # gopkg.in/bluesuncorp/validator.v5 v5.9.1
