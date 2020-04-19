@@ -37,9 +37,9 @@ func main() {
 		c.HTML(http.StatusOK, "index.tmpl.html", nil)
 	})
 
-	router.POST("/api/v1/ticket", v1.CreateTicket(db))
-	router.PUT("/api/v1/ticket/:id", v1.UpdateTicket(db))
-	router.GET("/api/v1/ticket/:id", v1.GetTicket(db))
+	router.POST("/api/v1/ticket", v1.CreateTicketOne(db))
+	router.PUT("/api/v1/ticket/:id", v1.UpdateTicketOne(db))
+	router.GET("/api/v1/ticket/:id", v1.GetTicketOne(db))
 	router.GET("/api/v1/tickets", v1.GetTickets(db))
 
 	router.Run(":" + port)

@@ -4,11 +4,13 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
-func CreateTicket(db *sql.DB) gin.HandlerFunc {
+func CreateTicketOne(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var ticket Ticket
 		var sqlStatement string
@@ -31,7 +33,7 @@ func CreateTicket(db *sql.DB) gin.HandlerFunc {
             CREATE TABLE IF NOT EXISTS tickets (
                 id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
                 time_entry timestamp DEFAULT now(),
-                time_exit timestamp,
+                time_exit timestamp DEFAULT '0001-01-01',
                 vehicle varchar NOT NULL,
                 parking_slot varchar NOT NULL
             )`
@@ -81,7 +83,7 @@ func GetTickets(db *sql.DB) gin.HandlerFunc {
 	}
 }
 
-func GetTicket(db *sql.DB) gin.HandlerFunc {
+func GetTicketOne(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		if len(id) == 0 {
@@ -102,7 +104,7 @@ func GetTicket(db *sql.DB) gin.HandlerFunc {
 	}
 }
 
-func UpdateTicket(db *sql.DB) gin.HandlerFunc {
+func UpdateTicketOne(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//Get id request
 		id := c.Param("id")
@@ -118,13 +120,38 @@ func UpdateTicket(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		//err := db.QueryRow(
-		//	"SELECT id, time_entry, vehicle, parking_slot FROM tickets WHERE id = $1", id,
-		//).Scan(&ticket.Id, &ticket.TimeEntry, &ticket.Vehicle, &ticket.ParkingSlot)
-		//if err != nil {
-		//	c.String(http.StatusInternalServerError, fmt.Sprintf("%q", err))
-		//	return
-		//}
+		//Check nonempty new values
+		sqlNewValues := make([]string, 0)
+		if len(ticket.ParkingSlot) > 0 {
+			sqlNewValues = append(sqlNewValues, fmt.Sprintf("parking_slot='%s'", ticket.ParkingSlot))
+		}
+		if len(ticket.Vehicle) > 0 {
+			sqlNewValues = append(sqlNewValues, fmt.Sprintf("vehicle='%s'", ticket.Vehicle))
+		}
+		if !ticket.TimeEntry.IsZero() {
+			sqlNewValues = append(sqlNewValues, fmt.Sprintf("time_entry='%s', ", ticket.TimeEntry.Format(time.RFC3339Nano)))
+		}
+		if !ticket.TimeExit.IsZero() {
+			sqlNewValues = append(sqlNewValues, fmt.Sprintf("time_exit='%s'", ticket.TimeExit.Format(time.RFC3339Nano)))
+		}
+		if len(sqlNewValues) == 0 {
+			c.String(http.StatusBadRequest, "Missing update values")
+			return
+		}
+
+		//Update new values into database
+		sqlStatement := fmt.Sprintf(`
+UPDATE tickets
+SET %s
+WHERE id = '%s'
+RETURNING id, time_entry, time_exit, vehicle, parking_slot`, strings.Join(sqlNewValues, ", "), id)
+		fmt.Println(sqlStatement)
+		err := db.QueryRow(sqlStatement).Scan(
+			&ticket.Id, &ticket.TimeEntry, &ticket.TimeExit, &ticket.Vehicle, &ticket.ParkingSlot,
+		)
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		c.JSON(http.StatusOK, ticket)
 	}
