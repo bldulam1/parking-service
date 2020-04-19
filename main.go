@@ -65,6 +65,7 @@ func main() {
 	router.POST("/api/v1/tickets", v1.CreateTicket(db))
 	router.GET("/api/v1/tickets", v1.GetTickets(db))
 	router.GET("/api/v1/ticket/:id", v1.GetTicket(db))
+	router.PUT("/api/v1/ticket/:id", v1.GetTicket(db))
 
 	router.Run(":" + port)
 }

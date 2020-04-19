@@ -83,6 +83,27 @@ func GetTickets(db *sql.DB) gin.HandlerFunc {
 func GetTicket(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
+		if len(id) == 0 {
+			c.String(http.StatusBadRequest, "Missing id")
+			return
+		}
+
+		var ticket Ticket
+		err := db.QueryRow(
+			"SELECT id, time_entry, vehicle, parking_slot FROM tickets WHERE id = $1", id,
+		).Scan(&ticket.Id, &ticket.TimeEntry, &ticket.Vehicle, &ticket.ParkingSlot)
+		if err != nil {
+			c.String(http.StatusInternalServerError, fmt.Sprintf("%q", err))
+			return
+		}
+
+		c.JSON(http.StatusOK, ticket)
+	}
+}
+
+func UpdateTicket(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
 		var ticket Ticket
 		err := db.QueryRow(
 			"SELECT id, time_entry, vehicle, parking_slot FROM tickets WHERE id = $1", id,
