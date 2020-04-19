@@ -8,11 +8,11 @@ import (
 )
 
 type Ticket struct {
-	Id          uuid.UUID
-	TimeEntry   time.Time
-	TimeExit    time.Time
-	Vehicle     string `json:"vehicle"`
-	ParkingSlot string `json:"parkingSlot"`
+	Id          uuid.UUID `json:"id"`
+	TimeEntry   time.Time `json:"timeEntry"`
+	TimeExit    time.Time `json:"timeExit"`
+	Vehicle     string    `json:"vehicle"`
+	ParkingSlot string    `json:"parkingSlot"`
 }
 
 func (t *Ticket) JSON() []byte {

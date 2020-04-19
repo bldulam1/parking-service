@@ -1,7 +1,15 @@
+PUT http://localhost:5000/api/v1/ticket/4fcb42b4-1055-4c1e-90d5-761add9837e8
+Accept: application/json
+
+{
+  "vehicle": "ABC1246",
+  "parkingSlot": "B1-A154"
+}
+### GET ticket
 GET http://localhost:5000/api/v1/ticket/4fcb42b4-1055-4c1e-90d5-761add9837e8
 Accept: application/json
 
-###
+### Creante new ticket
 POST http://localhost:5000/api/v1/tickets
 Content-Type: application/json
 
@@ -10,7 +18,7 @@ Content-Type: application/json
   "parkingSlot": "B1-A154"
 }
 
-###
+### GE
 GET http://localhost:5000/api/v1/tickets
 Accept: application/json
 
