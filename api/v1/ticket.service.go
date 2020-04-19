@@ -4,14 +4,12 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"net/http"
 	"time"
 )
 
 func CreateTicket(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		//vehicle, parkingSlot := c.Query("vehicle"), c.Query("parkingSlot")
 		var ticket Ticket
 		var sqlStatement string
 		if err := c.BindJSON(&ticket); err != nil {
@@ -34,7 +32,7 @@ func CreateTicket(db *sql.DB) gin.HandlerFunc {
                 time_entry timestamp DEFAULT now(),
                 time_exit timestamp,
                 vehicle varchar NOT NULL,
-                parkingSlot varchar NOT NULL
+                parking_slot varchar NOT NULL
             )`
 		if _, err := db.Exec(sqlStatement); err != nil {
 			errString := fmt.Sprintf("Error creating database table: %q", err)
@@ -45,27 +43,23 @@ func CreateTicket(db *sql.DB) gin.HandlerFunc {
 		//Insert new ticket into tickets
 		ticket.TimeEntry = time.Now()
 		sqlStatement = `
-			INSERT INTO tickets (vehicle, parkingSlot, time_entry) 
-			VALUES ($1, $2, $3) RETURNING id`
+			INSERT INTO tickets (vehicle, parking_slot) 
+			VALUES ($1, $2) RETURNING id, time_entry`
 		if err := db.QueryRow(sqlStatement,
 			ticket.Vehicle,
 			ticket.ParkingSlot,
-			ticket.TimeEntry.Format(time.RFC3339Nano),
-		).Scan(&ticket.Id); err != nil {
+		).Scan(&ticket.Id, &ticket.TimeEntry); err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("Error inserting ticket: %q", err))
 		}
-		fmt.Println(ticket.Id, ticket.TimeEntry)
 
-		c.JSON(http.StatusOK, string(ticket.JSON()))
+		c.JSON(http.StatusOK, ticket.JSON())
 	}
 }
 
 func GetTickets(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var sqlStatement string
-		sqlStatement = "SELECT * FROM tickets"
-
-		rows, err := db.Query(sqlStatement)
+		tickets := make([]Ticket, 0)
+		rows, err := db.Query("SELECT id, time_entry, vehicle, parking_slot FROM tickets")
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("Error reading ticks: %q", err))
 			return
@@ -74,14 +68,14 @@ func GetTickets(db *sql.DB) gin.HandlerFunc {
 		defer rows.Close()
 
 		for rows.Next() {
-			var id uuid.UUID
-			if err := rows.Scan(&id); err != nil {
+			var ticket Ticket
+			if err := rows.Scan(&ticket.Id, &ticket.TimeEntry, &ticket.Vehicle, &ticket.ParkingSlot); err != nil {
 				c.String(http.StatusInternalServerError, fmt.Sprintf("Error scanning ticket: %q", err))
 				return
 			}
-			fmt.Println(id)
+			tickets = append(tickets, ticket)
 		}
 
-		c.String(http.StatusOK, fmt.Sprintf("Read from DB: \n"))
+		c.JSON(http.StatusOK, tickets)
 	}
 }
