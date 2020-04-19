@@ -1,0 +1,14 @@
+POST http://localhost:5000/api/v1/ticket
+Content-Type: application/json
+
+{
+  "vehicle": "ABC1240",
+  "parkingSlot": "B1-A123"
+}
+
+###
+GET http://localhost:5000/api/v1/ticket?vehicle=ABC1234&parkingSlot=B1-A123
+Accept: application/json
+
+###
+

@@ -37,7 +37,12 @@ func main() {
 		repeat = 5
 	}
 
-	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	psqlInfo := os.Getenv("DATABASE_URL")
+	if len(psqlInfo) == 0 {
+		psqlInfo = "host=localhost port=5432 user=postgres password=tha3nohk! dbname=parking_service sslmode=disable"
+	}
+
+	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		log.Fatalf("Error opening database: %q", err)
 	}
@@ -58,7 +63,7 @@ func main() {
 	router.GET("/repeat", repeatHandler(repeat))
 
 	router.POST("/api/v1/ticket", v1.CreateTicket(db))
-	router.GET("/api/v1/ticket", v1.CreateTicket(db))
+	router.GET("/api/v1/ticket", v1.GetTickets(db))
 
 	router.Run(":" + port)
 }

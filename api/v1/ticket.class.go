@@ -11,8 +11,8 @@ type Ticket struct {
 	Id          uuid.UUID
 	TimeEntry   time.Time
 	TimeExit    time.Time
-	Vehicle     string
-	ParkingSlot string
+	Vehicle     string `json:"vehicle"`
+	ParkingSlot string `json:"parkingSlot"`
 }
 
 func (t *Ticket) JSON() []byte {
