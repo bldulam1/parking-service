@@ -1,13 +1,17 @@
-POST http://localhost:5000/api/v1/ticket
+GET http://localhost:5000/api/v1/ticket/4fcb42b4-1055-4c1e-90d5-761add9837e8
+Accept: application/json
+
+###
+POST http://localhost:5000/api/v1/tickets
 Content-Type: application/json
 
 {
-  "vehicle": "ABC1241",
-  "parkingSlot": "B1-A150"
+  "vehicle": "ABC1246",
+  "parkingSlot": "B1-A154"
 }
 
 ###
-GET http://localhost:5000/api/v1/ticket
+GET http://localhost:5000/api/v1/tickets
 Accept: application/json
 
 ###

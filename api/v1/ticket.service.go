@@ -52,7 +52,7 @@ func CreateTicket(db *sql.DB) gin.HandlerFunc {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("Error inserting ticket: %q", err))
 		}
 
-		c.JSON(http.StatusOK, ticket.JSON())
+		c.JSON(http.StatusOK, ticket)
 	}
 }
 
@@ -77,5 +77,21 @@ func GetTickets(db *sql.DB) gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, tickets)
+	}
+}
+
+func GetTicket(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		var ticket Ticket
+		err := db.QueryRow(
+			"SELECT id, time_entry, vehicle, parking_slot FROM tickets WHERE id = $1", id,
+		).Scan(&ticket.Id, &ticket.TimeEntry, &ticket.Vehicle, &ticket.ParkingSlot)
+		if err != nil {
+			c.String(http.StatusInternalServerError, fmt.Sprintf("%q", err))
+			return
+		}
+
+		c.JSON(http.StatusOK, ticket)
 	}
 }

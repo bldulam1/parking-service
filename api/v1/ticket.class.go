@@ -22,12 +22,3 @@ func (t *Ticket) JSON() []byte {
 	}
 	return thisJson
 }
-
-func NewTicket(vehicle, parkingSlot string) Ticket {
-	return Ticket{
-		Id:          uuid.New(),
-		TimeEntry:   time.Now(),
-		Vehicle:     vehicle,
-		ParkingSlot: parkingSlot,
-	}
-}
